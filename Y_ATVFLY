@@ -1,0 +1,151 @@
+local a = game:GetService("UserInputService")
+local b = game:GetService("RunService")
+local d = game:GetService("Players")
+local c = workspace.CurrentCamera
+local e = d.LocalPlayer
+local f = Enum.KeyCode.Y
+local g = 190 -- Movement speed
+local acceleration = 0.1 -- Smoother movement transition
+local h = math.rad(4) -- Rotation amount
+local i = false -- Movement active flag
+local j = {}
+local k = {}
+local l = {
+  {partName="Plastics",partSize=Vector3.new(7.551962852478027,2.7462241649627686,4.972546577453613)},
+  {partName="BackLeftRim",partSize=Vector3.new(1.067999005317688, 1.067999005317688, 0.7230425477027893)},
+  {partName="BackLeftW",partSize=Vector3.new(2.1518802642822266, 2.1898412704467773, 0.9632723927497864)},
+  {partName="BackRightRim",partSize=Vector3.new(1.067999005317688, 1.067999005317688, 0.7230425477027893)},
+  {partName="BackRightW",partSize=Vector3.new(2.1518802642822266, 2.1898412704467773, 0.9632723927497864)},
+  {partName="Frame",partSize=Vector3.new(6.972168922424316, 2.774535655975342, 5.0449066162109375)},
+  {partName="FrontLeftRim",partSize=Vector3.new(1.067999005317688, 1.067999005317688, 0.7230425477027893)},
+  {partName="FrontLeftW",partSize=Vector3.new(2.1518802642822266, 2.1898412704467773, 0.7132723927497864)},
+  {partName="FrontRightRim",partSize=Vector3.new(1.067999005317688, 1.067999005317688, 0.7230425477027893)},
+  {partName="FrontRightW",partSize=Vector3.new(2.1518802642822266, 2.1898412704467773, 0.7132723927497864)},
+  {partName="Grip",partSize=Vector3.new(0.5733855366706848, 0.9605950117111206, 2.1716928482055664)},
+  {partName="HandleBars",partSize=Vector3.new(0.448628693819046, 1.376966953277588, 2.0683438777923584)},
+  {partName="Plastics2",partSize=Vector3.new(5.546261787414551, 1.9555978775024414, 3.854473352432251)},
+  {partName="Seat",partSize=Vector3.new(4.404223442077637, 1.439717411994934, 2.2254559993743896)},
+  {partName="LeftBackWH",partSize=Vector3.new(0.625, 0.625, 0.125)},
+  {partName="LeftFrontWH",partSize=Vector3.new(0.625, 0.625, 0.125)},
+  {partName="RightBackWH",partSize=Vector3.new(0.625, 0.625, 0.125)},
+  {partName="RightFrontWH",partSize=Vector3.new(0.625, 0.625, 0.125)}
+}
+
+local function m(n, o, p)
+    p = p or 0.001
+    return math.abs(n.X - o.X) <= p and math.abs(n.Y - o.Y) <= p and math.abs(n.Z - o.Z) <= p
+end
+
+local function q(r)
+    for _, t in ipairs(l) do
+        if r:IsA("BasePart") and r.Name == t.partName and m(r.Size, t.partSize) then
+            return true
+        end
+    end
+    return false
+end
+
+local function getMovementDirection()
+    local moveDirection = Vector3.new(0, 0, 0)
+    local forward = c.CFrame.LookVector
+    local right = c.CFrame.RightVector
+
+    -- Remove Y-axis influence to prevent vertical movement when looking up/down
+    forward = Vector3.new(forward.X, 0, forward.Z).Unit
+    right = Vector3.new(right.X, 0, right.Z).Unit
+
+    if a:IsKeyDown(Enum.KeyCode.W) then
+        moveDirection = moveDirection + forward
+    end
+    if a:IsKeyDown(Enum.KeyCode.A) then
+        moveDirection = moveDirection - right
+    end
+    if a:IsKeyDown(Enum.KeyCode.S) then
+        moveDirection = moveDirection - forward
+    end
+    if a:IsKeyDown(Enum.KeyCode.D) then
+        moveDirection = moveDirection + right
+    end
+    if a:IsKeyDown(Enum.KeyCode.LeftControl) then
+        moveDirection = moveDirection - Vector3.new(0, 1, 0) -- Allow downward movement via LeftControl
+    end
+
+    if moveDirection.Magnitude > 0 then
+        return moveDirection.Unit * g
+    else
+        return Vector3.new(0, 0, 0) -- Stops movement when no keys are pressed
+    end
+end
+
+local function u(v)
+    if not i then
+        -- Stop movement when key is released
+        local bv = v:FindFirstChild("BodyVelocity")
+        if bv then
+            bv:Destroy()
+        end
+        return
+    end
+
+    local moveVector = getMovementDirection()
+    
+    -- Apply BodyVelocity for smooth movement
+    local bv = v:FindFirstChild("BodyVelocity")
+    if not bv then
+        bv = Instance.new("BodyVelocity")
+        bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+        bv.Velocity = Vector3.new(0, 0, 0)
+        bv.Parent = v
+    end
+
+    -- Smooth transition
+    bv.Velocity = bv.Velocity:Lerp(moveVector, acceleration)
+end
+
+a.InputBegan:Connect(function(y, z)
+    if z then return end
+    if y.KeyCode == f then
+        i = not i
+        if i then
+            for _, A in ipairs(k) do
+                A.Anchored = false
+                local B = b.Heartbeat:Connect(function() u(A) end)
+                table.insert(j, B)
+            end
+        else
+            for _, B in ipairs(j) do
+                B:Disconnect()
+            end
+            j = {}
+
+            -- Stop movement instantly
+            for _, A in ipairs(k) do
+                local bv = A:FindFirstChild("BodyVelocity")
+                if bv then
+                    bv:Destroy()
+                end
+            end
+        end
+    end
+end)
+
+workspace.DescendantAdded:Connect(function(C)
+    if q(C) then
+        table.insert(k, C)
+    end
+end)
+
+workspace.DescendantRemoving:Connect(function(C)
+    for D, A in ipairs(k) do
+        if A == C then
+            table.remove(k, D)
+            break
+        end
+    end
+end)
+
+for _, C in ipairs(workspace:GetDescendants()) do
+    if q(C) then
+        table.insert(k, C)
+    end
+end
