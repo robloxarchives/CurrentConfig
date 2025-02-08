@@ -1,0 +1,109 @@
+local a=game:GetService("UserInputService")
+local b=game:GetService("RunService")
+local c=workspace.CurrentCamera
+local d=game:GetService("Players")
+local e=d.LocalPlayer
+local f=Enum.KeyCode.C
+local shiftKey=Enum.KeyCode.LeftShift -- You can also check RightShift if needed
+local g=500
+local h=math.rad(4)
+local i=false
+local j={}
+local k={}
+local l=6
+local delayTime=0.1 -- Slight delay before starting movement
+
+local m={{partName="Bottom",partSize=Vector3.new(3,3,3)},{partName="Middle",partSize=Vector3.new(3,3,3)},{partName="Top",partSize=Vector3.new(3,3,3)},{partName="HLPart",partSize=Vector3.new(4,1,2)}}
+
+local function n(o,p,q)
+    q=q or 0.001
+    return math.abs(o.X-p.X)<=q and math.abs(o.Y-p.Y)<=q and math.abs(o.Z-p.Z)<=q
+end
+
+local function r(s)
+    for t,u in ipairs(m)do 
+        if s:IsA("BasePart") and s.Name==u.partName and n(s.Size,u.partSize)then 
+            return true 
+        end 
+    end
+    return false 
+end
+
+local function v()
+    for w,x in ipairs(k)do 
+        if x:IsA("BasePart")then 
+            x.Position=x.Position+Vector3.new(0,l,0)
+        end 
+    end 
+end
+
+local function y(z)
+    local A=Vector3.new(0,0,0)
+    local B=CFrame.new()
+    if not a:GetFocusedTextBox() and i then 
+        if a:IsKeyDown(Enum.KeyCode.W)then A=A+c.CFrame.LookVector*g end
+        if a:IsKeyDown(Enum.KeyCode.A)then A=A-c.CFrame.RightVector*g end
+        if a:IsKeyDown(Enum.KeyCode.S)then A=A-c.CFrame.LookVector*g end
+        if a:IsKeyDown(Enum.KeyCode.D)then A=A+c.CFrame.RightVector*g end
+        if a:IsKeyDown(Enum.KeyCode.F)then A=A+c.CFrame.UpVector*g end
+        if a:IsKeyDown(Enum.KeyCode.LeftControl)then A=A-c.CFrame.UpVector*g end
+        if a:IsKeyDown(Enum.KeyCode.R)then B=B*CFrame.Angles(0,-h,0)end
+        if a:IsKeyDown(Enum.KeyCode.Q)then B=B*CFrame.Angles(0,h,0)end
+        if a:IsKeyDown(Enum.KeyCode.O)then B=B*CFrame.Angles(-h,0,0)end
+        if a:IsKeyDown(Enum.KeyCode.F)then B=B*CFrame.Angles(h,0,0)end
+        z.CFrame=z.CFrame*B 
+    else 
+        z.Velocity=Vector3.new()
+        z.RotVelocity=Vector3.new()
+    end
+    z.Velocity=A 
+end
+
+a.InputBegan:Connect(function(C,D)
+    if D then return end
+    if C.KeyCode == f and a:IsKeyDown(shiftKey) then  -- Check if Shift is held
+        task.spawn(function()  -- Run this in the background
+            task.wait(delayTime)  -- Wait before executing the actions
+            if a:IsKeyDown(f) and a:IsKeyDown(shiftKey) then  -- Check again if still holding both
+                v() 
+                i=true
+                for w,E in ipairs(k)do 
+                    E.Anchored=false
+                    local F=b.Heartbeat:Connect(function() y(E) end)
+                    table.insert(j,F)
+                end
+            end
+        end)
+    end
+end)
+
+a.InputEnded:Connect(function(C)
+    if C.KeyCode == f or C.KeyCode == shiftKey then  -- Release on either Shift or C
+        i=false
+        for w,F in ipairs(j)do 
+            F:Disconnect()
+        end
+        j={}
+    end 
+end)
+
+workspace.DescendantAdded:Connect(function(G)
+    if r(G)then 
+        table.insert(k,G)
+    end 
+end)
+
+workspace.DescendantRemoving:Connect(function(G)
+    for H,E in ipairs(k)do 
+        if E==G then 
+            table.remove(k,H)
+            break 
+        end 
+    end 
+end)
+
+for w,G in ipairs(workspace:GetDescendants())do 
+    if r(G)then 
+        table.insert(k,G)
+    end 
+end
