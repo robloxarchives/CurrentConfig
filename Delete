@@ -1,0 +1,31 @@
+local Plr = game:GetService("Players").LocalPlayer
+local Mouse = Plr:GetMouse()
+local UserInputService = game:GetService("UserInputService")
+
+local deletedObjects = {}
+
+Mouse.Button1Down:Connect(function()
+    if not UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then return end
+    if not Mouse.Target then return end
+
+    local target = Mouse.Target
+
+    -- Store the deleted object details
+    table.insert(deletedObjects, {object = target:Clone(), parent = target.Parent, cframe = target.CFrame})
+
+    target:Destroy()
+end)
+
+local function restoreDeletedObjects()
+    for _, objData in ipairs(deletedObjects) do
+        objData.object.Parent = objData.parent
+        objData.object.CFrame = objData.cframe
+    end
+    deletedObjects = {} -- Clear history after restoring
+end
+
+UserInputService.InputBegan:Connect(function(input)
+    if input.KeyCode == Enum.KeyCode.P then
+        restoreDeletedObjects()
+    end
+end)
