@@ -1,0 +1,37 @@
+local headSize = 6
+
+local function createHeadIndicator(hrp)
+    local boxAdornment = Instance.new("BoxHandleAdornment", hrp.Head)
+    boxAdornment.Color3 = Color3.new(1.000000, 0.000000, 0.000000)
+    boxAdornment.Adornee = hrp.Head
+    boxAdornment.AlwaysOnTop = true
+    boxAdornment.ZIndex = 10
+    boxAdornment.Transparency = 0
+    boxAdornment.Size = Vector3.new(2, 2, 2)
+end
+
+local function updateHeadSize(character)
+    if character:FindFirstChild("HumanoidRootPart") and character:FindFirstChild("Head") then
+        local head = character.Head
+        head.Size = Vector3.new(headSize, headSize, headSize)
+        head.Transparency = 0.2
+        head.Color = Color3.fromRGB(123, 222, 78)
+        head.CanCollide = false
+        createHeadIndicator(character)
+    end
+end
+
+-- Update existing characters in the workspace
+for _, obj in pairs(workspace:GetChildren()) do
+    if obj:IsA("Model") and obj:FindFirstChild("HumanoidRootPart") then
+        updateHeadSize(obj)
+    end
+end
+
+-- Automatically update new characters when they are added to the workspace
+workspace.ChildAdded:Connect(function(child)
+    task.wait(0.1) -- Small delay to ensure parts are fully loaded
+    if child:IsA("Model") and child:FindFirstChild("HumanoidRootPart") then
+        updateHeadSize(child)
+    end
+end)
