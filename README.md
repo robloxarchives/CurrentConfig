@@ -1,4 +1,4 @@
-# MAINLOADER **UPDATED**
+# MAINLOADER
 ```
 local scripts = {
     'https://raw.githubusercontent.com/NotH4xor/trident/main/UD_ESP',
@@ -8,11 +8,10 @@ local scripts = {
     'https://raw.githubusercontent.com/NotH4xor/trident/main/ATV_Fly',
     'https://raw.githubusercontent.com/NotH4xor/trident/main/CameraFix',
     'https://raw.githubusercontent.com/NotH4xor/trident/main/RaidWithATV',
-    'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/Sprint',
-    'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/Y_ATVFLY',
     'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/fullbright',
     'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/Delete',
-    'https://raw.githubusercontent.com/NotH4xor/Fallen-Scripts/main/Amongus'
+    'https://raw.githubusercontent.com/NotH4xor/Fallen-Scripts/main/Amongus',
+    'https://raw.githubusercontent.com/NotH4xor/trident/main/FreeSwimhub'
 }
 for _, url in ipairs(scripts) do
     local thread = coroutine.create(function()
