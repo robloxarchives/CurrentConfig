@@ -1,5 +1,5 @@
-# MAINLOADER
-```lua
+# MAINLOADER **UPDATED**
+```
 local scripts = {
     'https://raw.githubusercontent.com/NotH4xor/trident/main/UD_ESP',
     'https://raw.githubusercontent.com/NotH4xor/trident/main/ChunkRemoval(HoldR)',
@@ -12,7 +12,7 @@ local scripts = {
     'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/Y_ATVFLY',
     'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/fullbright',
     'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/Delete',
-    'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/HitboxESP'
+    'https://raw.githubusercontent.com/NotH4xor/Fallen-Scripts/main/Amongus'
 }
 for _, url in ipairs(scripts) do
     local thread = coroutine.create(function()
