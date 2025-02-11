@@ -1,0 +1,103 @@
+local a = game:GetService("UserInputService")
+local b = game:GetService("RunService")
+local c = workspace.CurrentCamera
+local d = game:GetService("Players")
+local e = d.LocalPlayer
+local f = Enum.KeyCode.C
+local shiftKey = Enum.KeyCode.LeftShift 
+local i = false
+local j = {}
+local k = {}
+local l = 6.2 -- Height increment
+local delayTime = 0
+
+local m = {
+    {partName = "Bottom", partSize = Vector3.new(3,3,3)},
+    {partName = "Middle", partSize = Vector3.new(3,3,3)},
+    {partName = "Top", partSize = Vector3.new(3,3,3)},
+    {partName = "HLPart", partSize = Vector3.new(4,1,2)}
+}
+
+-- Function to check if part sizes match expected dimensions
+local function n(o, p, q)
+    q = q or 0.001
+    return math.abs(o.X - p.X) <= q and math.abs(o.Y - p.Y) <= q and math.abs(o.Z - p.Z) <= q
+end
+
+-- Function to validate if a part should be tracked
+local function r(s)
+    for t, u in ipairs(m) do 
+        if s:IsA("BasePart") and s.Name == u.partName and n(s.Size, u.partSize) then 
+            return true 
+        end 
+    end
+    return false 
+end
+
+-- Function to move objects up when added
+local function v()
+    for w, x in ipairs(k) do 
+        if x:IsA("BasePart") then 
+            x.Position = x.Position + Vector3.new(0, l, 0) -- Moves the object up
+        end 
+    end 
+end
+
+-- Key press events
+a.InputBegan:Connect(function(C, D)
+    if D then return end
+    if C.KeyCode == f and a:IsKeyDown(shiftKey) then  
+        task.spawn(function()  
+            task.wait(delayTime)  
+            if a:IsKeyDown(f) and a:IsKeyDown(shiftKey) then  
+                v() -- Move parts up
+                i = true
+                for w, E in ipairs(k) do 
+                    E.Anchored = false
+                end
+            end
+        end)
+    end
+end)
+
+a.InputEnded:Connect(function(C)
+    if C.KeyCode == f or C.KeyCode == shiftKey then  
+        i = false
+    end 
+end)
+
+-- Event listener for new parts added to the workspace
+workspace.DescendantAdded:Connect(function(G)
+    if r(G) then 
+        table.insert(k, G)
+        -- Ensure objects always spawn higher
+        G.Position = G.Position + Vector3.new(0, l, 0)
+    end 
+end)
+
+-- Event listener for parts being removed from the workspace
+workspace.DescendantRemoving:Connect(function(G)
+    for H, E in ipairs(k) do 
+        if E == G then 
+            table.remove(k, H)
+            break 
+        end 
+    end 
+end)
+
+-- Initialize already existing parts
+for w, G in ipairs(workspace:GetDescendants()) do 
+    if r(G) then 
+        table.insert(k, G)
+        -- Ensure objects spawn higher initially
+        G.Position = G.Position + Vector3.new(0, l, 0)
+    end 
+end
+
+-- Ensure player's character spawns at a higher position
+e.CharacterAdded:Connect(function(char)
+    local root = char:FindFirstChild("HumanoidRootPart")
+    if root then
+        root.Position = root.Position + Vector3.new(0, 10, 0) -- Adjust character spawn height
+    end
+end)
