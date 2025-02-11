@@ -9,7 +9,8 @@ local scripts = {
     'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/fullbright',
     'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/Delete',
     'https://raw.githubusercontent.com/NotH4xor/Fallen-Scripts/main/Amongus',
-    'https://raw.githubusercontent.com/NotH4xor/trident/main/FreeSwimhub'
+    'https://raw.githubusercontent.com/NotH4xor/trident/main/FreeSwimhub',
+    'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/HeightIncrement%20(For%20FreeSwimhub%20Speed)'
 }
 for _, url in ipairs(scripts) do
     local thread = coroutine.create(function()
