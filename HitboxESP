@@ -1,13 +1,13 @@
-local headSize = 6
+local headSize = 9
 
 local function createHeadIndicator(hrp)
     local boxAdornment = Instance.new("BoxHandleAdornment", hrp.Head)
-    boxAdornment.Color3 = Color3.new(1.000000, 0.000000, 0.000000)
+    boxAdornment.Color3 = Color3.new(0.000000, 0.517647, 1.000000)
     boxAdornment.Adornee = hrp.Head
     boxAdornment.AlwaysOnTop = true
     boxAdornment.ZIndex = 10
     boxAdornment.Transparency = 0
-    boxAdornment.Size = Vector3.new(2, 2, 2)
+    boxAdornment.Size = Vector3.new(5, 5, 5)
 end
 
 local function updateHeadSize(character)
