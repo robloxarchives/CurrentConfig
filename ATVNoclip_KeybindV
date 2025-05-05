@@ -1,0 +1,53 @@
+print("Loaded")
+
+-- Wait for game to load
+if not game:IsLoaded() then
+    game.Loaded:Wait()
+end
+
+-- Services
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local Workspace = game:GetService("Workspace")
+local LocalPlayer = Players.LocalPlayer
+
+-- ATV toggle setup
+local collisionToggle = false
+local ClosestATV = nil
+
+local function GetClosestATV()
+    local closestATV, closestDistance = nil, math.huge
+
+    for _, v in ipairs(Workspace:GetChildren()) do
+        if v:FindFirstChild("Seat") and v:FindFirstChild("Plastics") then
+            local distance = (v.Plastics.Position - Workspace.Const.Ignore.LocalCharacter.Middle.Position).Magnitude
+            if distance < closestDistance then
+                closestATV = v
+                closestDistance = distance
+            end
+        end
+    end
+
+    return closestATV
+end
+
+local function toggleATVCollision()
+    ClosestATV = GetClosestATV()
+    if not ClosestATV then return end
+
+    collisionToggle = not collisionToggle
+    for _, part in ipairs(ClosestATV:GetDescendants()) do
+        if part:IsA("BasePart") then
+            part.CanCollide = collisionToggle
+        end
+    end
+    print("ATV Collision Toggled:", collisionToggle)
+end
+
+-- Keybind listener for "V" key
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if not gameProcessed and input.KeyCode == Enum.KeyCode.V then
+        toggleATVCollision()
+    end
+end)
