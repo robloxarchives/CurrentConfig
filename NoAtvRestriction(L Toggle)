@@ -1,0 +1,34 @@
+local UserInputService = game:GetService("UserInputService")
+local garbage = {}
+
+-- Extract maxlooky
+for _, v in pairs(getgc(true)) do
+    if type(v) == "table" and rawget(v, "SetMaxRelativeLookExtentsY") then
+        garbage.maxlooky = rawget(v, "SetMaxRelativeLookExtentsY")
+    end
+end
+
+-- Wait until maxlooky is found
+repeat task.wait() until garbage.maxlooky
+
+local noatvrestriction = false
+
+-- Toggle with L key
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    if input.KeyCode == Enum.KeyCode.L then
+        noatvrestriction = not noatvrestriction
+        print("No ATV Restriction:", noatvrestriction and "ENABLED" or "DISABLED")
+
+        if noatvrestriction then
+            task.spawn(function()
+                while noatvrestriction do
+                    pcall(function()
+                        setupvalue(garbage.maxlooky, 1, 10000)
+                    end)
+                    task.wait()
+                end
+            end)
+        end
+    end
+end)
