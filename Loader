@@ -7,7 +7,8 @@ local scripts = {
 	'https://raw.githubusercontent.com/1337h4xx/1/main/X_3rd_Person',
 	'https://raw.githubusercontent.com/NotH4xor/trident/main/UD_FREECAM',
 	'https://raw.githubusercontent.com/1337h4xx/1/main/RGB%20Notification',
-	'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/Delete'
+	'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/Delete',
+	'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/NoAtvRestriction'
 }
 for _, url in ipairs(scripts) do
     local thread = coroutine.create(function()
