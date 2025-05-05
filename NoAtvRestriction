@@ -1,0 +1,22 @@
+local garbage = {}
+
+-- Extract maxlooky
+for _, v in pairs(getgc(true)) do
+    if type(v) == "table" and rawget(v, "SetMaxRelativeLookExtentsY") then
+        garbage.maxlooky = rawget(v, "SetMaxRelativeLookExtentsY")
+        break
+    end
+end
+
+-- Wait until it's found
+repeat task.wait() until garbage.maxlooky
+
+-- Run the function nonstop
+task.spawn(function()
+    while true do
+        pcall(function()
+            setupvalue(garbage.maxlooky, 1, 10000)
+        end)
+        task.wait()
+    end
+end)
