@@ -1,0 +1,34 @@
+-- Triden V5 Longneck
+local UserInputService = game:GetService("UserInputService")
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local workspace = game:GetService("Workspace")
+
+local LocalPlayer = Players.LocalPlayer
+local Keybind = Enum.KeyCode.V -- Toggle key
+
+-- Wait for required parts
+local top, originalCFrame
+repeat
+    local success = pcall(function()
+        top = workspace.Const.Ignore.LocalCharacter.Top
+        originalCFrame = top.Prism1.CFrame
+    end)
+    task.wait()
+until success and top and originalCFrame
+
+local mode = 0 -- 0 = default, 1 = mode1, 2 = mode2
+
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed or input.KeyCode ~= Keybind then return end
+
+    mode = (mode + 1) % 3
+
+    if mode == 0 then
+        top.Prism1.CFrame = originalCFrame
+    elseif mode == 1 then
+        top.Prism1.CFrame = originalCFrame - Vector3.yAxis * 5
+    elseif mode == 2 then
+        top.Prism1.CFrame = originalCFrame - Vector3.yAxis * 3.4
+    end
+end)
