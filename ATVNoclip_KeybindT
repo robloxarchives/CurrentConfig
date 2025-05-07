@@ -45,9 +45,9 @@ local function toggleATVCollision()
     print("ATV Collision Toggled:", collisionToggle)
 end
 
--- Keybind listener for "V" key
+-- Keybind listener for "T" key
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if not gameProcessed and input.KeyCode == Enum.KeyCode.V then
+    if not gameProcessed and input.KeyCode == Enum.KeyCode.T then
         toggleATVCollision()
     end
 end)
