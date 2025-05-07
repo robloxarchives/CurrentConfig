@@ -9,7 +9,7 @@ local scripts = {
 	'https://raw.githubusercontent.com/1337h4xx/1/main/RGB%20Notification',
 	'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/Delete',
 	'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/NoAtvRestriction',
-	'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/ATVNoclip_KeybindV'
+	'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/ATVNoclip_KeybindT'
 }
 for _, url in ipairs(scripts) do
     local thread = coroutine.create(function()
