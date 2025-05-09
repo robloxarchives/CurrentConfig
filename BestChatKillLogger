@@ -1,0 +1,42 @@
+local a = {}
+local b = nil
+local c = nil
+local function d() end
+local function e(f,g,h,i)
+    local j = tick()
+    local k
+    k=game:GetService("RunService").RenderStepped:Connect(function()
+        local l = tick() - j
+        f.Text = "︻デ══💥 Killed " .. g .. " " .. h .. " Meters"
+        if l >= i then 
+            k:Disconnect()
+        end
+    end)
+end
+local function m(n,o,p)
+    task.spawn(function()
+        local f = {}
+        f.Text = "︻デ══💥 Killed " .. n .. " " .. o .. " Meters"
+        table.insert(a, f)
+        e(f, n, o, p)
+        wait(p)
+        table.remove(a, table.find(a, f))
+    end)
+end
+game:GetService("LogService").MessageOut:Connect(function(q)
+    local localPlayerName = game.Players.LocalPlayer.Name
+    local n = q:match("->([%w_]+)")
+    local r = q:match("(%d+%.?%d*)s")
+    local s = "︻デ══💥 Killed " .. n .. " " .. r .. " Meters"
+    if n and r and s ~= b and n ~= c and n ~= localPlayerName then
+        m(n, r, 4)
+        b = s
+        c = n
+        local t = 23
+        local u = "Global"
+        local v = {t, s, u}
+        local w = game:GetService("Players")
+        local x = w.LocalPlayer
+        x:WaitForChild("TCP"):FireServer(unpack(v))
+    end
+end)
