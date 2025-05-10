@@ -5,7 +5,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local workspace = game:GetService("Workspace")
 
 local LocalPlayer = Players.LocalPlayer
-local Keybind = Enum.KeyCode.V -- Toggle key
+local Keybind = Enum.KeyCode.L -- Toggle key
 
 -- Wait for required parts
 local top, originalCFrame
