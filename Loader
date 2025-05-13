@@ -10,7 +10,9 @@ local scripts = {
 	'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/Delete',
 	'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/NoAtvRestriction',
 	'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/ATVNoclip_KeybindT',
-	'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/refs/heads/main/V5Longneck'
+	'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/V5Longneck',
+	'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/OppositeLootAll(V5)', -- Put Loot Back
+	'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/LootAll(V5)' -- V Loot All
 }
 for _, url in ipairs(scripts) do
     local thread = coroutine.create(function()
