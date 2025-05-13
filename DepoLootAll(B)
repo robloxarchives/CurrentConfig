@@ -5,7 +5,7 @@ local remote = player:WaitForChild("TCP")
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end
     if input.KeyCode == Enum.KeyCode.B then
-        for i = 1, 40 do
+        for i = 1, 43 do
             if i > 8 then
                 remote:FireServer(12, i, false)
             end
