@@ -10,10 +10,11 @@ local scripts = {
 	'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/Delete',
 	'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/NoAtvRestriction',
 	'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/ATVNoclip_KeybindT',
-	'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/V5Longneck',
-	'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/OppositeLootAll(V5)', -- Keybind: B - Put Loot Back
-	'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/LootAll(V5)', -- Keybind: V - Loot All
-	'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/DespawnQuickly' -- Keybind: U - Despawn
+	'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/LongNeck(L)',
+	'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/DepoLootAll(B)',
+	'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/LootAll(V)',
+	'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/DespawnLoot(U)',
+	'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/UnloadAllWeapons(H)'
 }
 for _, url in ipairs(scripts) do
     local thread = coroutine.create(function()
