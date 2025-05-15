@@ -7,6 +7,7 @@ local remote = player:WaitForChild("TCP")
 local toggled = false
 local lastTick = 0
 local fireCooldown = 0.34 -- Slower than before to prevent kick
+-- Anything under 0.34 milliseconds will instant kick you.
 
 -- On-screen status text
 local text = Drawing.new("Text")
@@ -21,7 +22,7 @@ text.Position = workspace.CurrentCamera.ViewportSize / 2 + Vector2.new(0, 40)
 -- Toggle with RightBracket
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
 	if gameProcessed then return end
-	if input.KeyCode == Enum.KeyCode.O then
+	if input.KeyCode == Enum.KeyCode.RightBracket then
 		toggled = not toggled
 		text.Visible = toggled
 	end
