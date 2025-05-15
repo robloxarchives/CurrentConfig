@@ -1,0 +1,14 @@
+local UserInputService = game:GetService("UserInputService")
+local player = game:GetService("Players").LocalPlayer
+local remote = player:WaitForChild("TCP")
+
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    if input.KeyCode == Enum.KeyCode.U then
+        for i = 1, 40 do
+            if i > 0 then
+                remote:FireServer(7, i, true)
+            end
+        end
+    end
+end)
