@@ -21,7 +21,8 @@ local scripts = {
 	'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/DepoLootAll(B)',
 	'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/LootAll(V)',
 	'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/UnloadAllWeapons(H)',
-	'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/AutoDespawn(RightBracket)'
+	'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/DespawnLoot(U)',
+	'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/BackpackCleanup(RightBracket)'
 }
 for _, url in ipairs(scripts) do
     local thread = coroutine.create(function()
