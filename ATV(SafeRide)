@@ -1,0 +1,26 @@
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+
+local trident = {
+    tcp = LocalPlayer:WaitForChild("TCP"),
+}
+
+local enabled = true
+
+-- Hook the FireServer to modify the CFrame args
+local __namecall
+__namecall = hookmetamethod(game, "__namecall", newcclosure(function(self, ...)
+    local args = {...}
+    if not checkcaller() and self == trident.tcp and getnamecallmethod() == "FireServer" then
+        if args[1] == 46 and typeof(args[3]) == "Vector3" and typeof(args[4]) == "Vector3" and enabled then
+            local pitch = 0
+            local roll = 0
+            local yaw = args[4].Y
+            args[4] = Vector3.new(pitch, yaw, roll)
+            return __namecall(self, unpack(args))
+        end
+    end
+    return __namecall(self, ...)
+end))
