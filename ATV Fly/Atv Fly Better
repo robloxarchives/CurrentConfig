@@ -38,7 +38,7 @@ end
 -- ATV Fly feature
 do
     local carfly_enabled = false
-    local speed, accel, upspeed = 300, 200, 15
+    local speed, accel, upspeed = 338, 200, 15
 
     -- Toggle with Y key
     UserInputService.InputBegan:Connect(function(input, gameProcessed)
