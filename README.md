@@ -7,7 +7,7 @@ setfflag("DebugRunParallelLuaOnMainThread","True");
 ```lua
 local scripts = {
     'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/AmongusOBFUSCATED',
-    'https://raw.githubusercontent.com/robloxarchives/Trident/main/ATVONLY',
+    'https://raw.githubusercontent.com/robloxarchives/Trident/main/ATV(REGULAR)',
     'https://raw.githubusercontent.com/robloxarchives/Trident/main/SwimStyleSPRINT',
     'https://raw.githubusercontent.com/NotH4xor/trident/main/UD_ESP',
     'https://raw.githubusercontent.com/NotH4xor/trident/main/ChunkRemoval(HoldR)',
