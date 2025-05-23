@@ -1,0 +1,53 @@
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+
+local trident = {
+    tcp = LocalPlayer:WaitForChild("TCP"),
+}
+
+local enabled = true -- 🔄 Already enabled on start
+
+-- Create on-screen indicator
+local SafeRideText = Drawing.new("Text")
+SafeRideText.Color = Color3.new(1, 1, 1)
+SafeRideText.Text = "SafeRide"
+SafeRideText.Visible = true -- ✅ Visible from the start
+SafeRideText.Outline = true
+SafeRideText.Center = false
+SafeRideText.Size = 25
+
+-- Function to reposition to slightly lower top-right corner
+local function updatePosition()
+    local camera = workspace.CurrentCamera
+    local viewportSize = camera.ViewportSize
+    SafeRideText.Position = Vector2.new(viewportSize.X - 100, 40) -- moved down from 20 to 40
+end
+
+-- Maintain correct positioning across resolution changes
+RunService.RenderStepped:Connect(updatePosition)
+
+-- Toggle keybind: N
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if not gameProcessed and input.KeyCode == Enum.KeyCode.N then
+        enabled = not enabled
+        SafeRideText.Visible = enabled
+    end
+end)
+
+-- Hook FireServer logic
+local __namecall
+__namecall = hookmetamethod(game, "__namecall", newcclosure(function(self, ...)
+    local args = { ... }
+    if not checkcaller() and self == trident.tcp and getnamecallmethod() == "FireServer" then
+        if args[1] == 46 and typeof(args[3]) == "Vector3" and typeof(args[4]) == "Vector3" and enabled then
+            local pitch = 0
+            local roll = 0
+            local yaw = args[4].Y
+            args[4] = Vector3.new(pitch, yaw, roll)
+            return __namecall(self, unpack(args))
+        end
+    end
+    return __namecall(self, ...)
+end))
