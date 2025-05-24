@@ -1,0 +1,29 @@
+local RunService = game:GetService("RunService")
+
+local names = { "LeftUpperArm", "LeftLowerArm", "LeftHand",
+                "RightUpperArm", "RightLowerArm", "RightHand",
+                "c_LeftLowerArm", "c_RightLowerArm" }
+
+local include = table.create(0)
+for _, name in ipairs(names) do include[name] = true end
+
+local parts = {}
+for _, part in ipairs(workspace.Const.Ignore.FPSArms:GetDescendants()) do
+    if part:IsA("BasePart") and include[part.Name] then
+        part.Material = Enum.Material.ForceField
+        pcall(function() part.TextureID = "" end)
+        parts[#parts + 1] = part
+    end
+end
+
+RunService.RenderStepped:Connect(function()
+    local t = tick()
+    local color = Color3.fromRGB(
+        math.abs(math.sin(t)) * 255,
+        math.abs(math.sin(t + 2)) * 255,
+        math.abs(math.sin(t + 4)) * 255
+    )
+    for _, part in ipairs(parts) do
+        part.Color = color
+    end
+end)
