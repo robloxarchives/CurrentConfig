@@ -1,46 +1,39 @@
 local RunService = game:GetService("RunService")
-local FPSContainer = workspace:WaitForChild("Const"):WaitForChild("Ignore")
-local parts = {}
+local RGBRoot = workspace:WaitForChild("Const"):WaitForChild("Ignore")
 
--- Rainbow update
-RunService.RenderStepped:Connect(function()
-	local t = tick()
-	local color = Color3.fromRGB(
-		math.abs(math.sin(t)) * 255,
-		math.abs(math.sin(t + 2)) * 255,
-		math.abs(math.sin(t + 4)) * 255
-	)
-	for _, part in ipairs(parts) do
-		part.Color = color
-	end
-end)
+local rainbowParts = {}
+local trackedParts = {} -- avoid duplicates
 
--- Applies material + stores for coloring
-local function handlePart(part)
-	if part:IsA("BasePart") then
+-- 🌈 Full-spectrum RGB cycling using HSV
+local function getHueColor(t)
+	local hue = (t % 5) / 5 -- loop every 5 seconds
+	return Color3.fromHSV(hue, 1, 1) -- full saturation, full brightness
+end
+
+-- 🧠 Register part only once
+local function tryRegister(part)
+	if part:IsA("BasePart") and not trackedParts[part] then
 		part.Material = Enum.Material.ForceField
 		pcall(function() part.TextureID = "" end)
-		table.insert(parts, part)
+		table.insert(rainbowParts, part)
+		trackedParts[part] = true
 	end
 end
 
--- Handles full FPSArms folder
-local function processFPSArms(folder)
-	for _, descendant in ipairs(folder:GetDescendants()) do
-		handlePart(descendant)
-	end
-	folder.DescendantAdded:Connect(handlePart)
+-- Bind all existing descendants
+for _, descendant in ipairs(RGBRoot:GetDescendants()) do
+	tryRegister(descendant)
 end
 
--- Already exists? Process now
-local existing = FPSContainer:FindFirstChild("FPSArms")
-if existing then
-	processFPSArms(existing)
-end
+-- Bind any new descendants dynamically
+RGBRoot.DescendantAdded:Connect(tryRegister)
 
--- Watch for when it's added later
-FPSContainer.ChildAdded:Connect(function(child)
-	if child.Name == "FPSArms" then
-		processFPSArms(child)
+-- Real-time color update loop
+RunService.RenderStepped:Connect(function()
+	local color = getHueColor(tick())
+	for _, part in ipairs(rainbowParts) do
+		if part and part:IsDescendantOf(workspace) then
+			part.Color = color
+		end
 	end
 end)
