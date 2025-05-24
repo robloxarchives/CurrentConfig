@@ -1,0 +1,46 @@
+local RunService = game:GetService("RunService")
+local FPSContainer = workspace:WaitForChild("Const"):WaitForChild("Ignore")
+local parts = {}
+
+-- Rainbow update
+RunService.RenderStepped:Connect(function()
+	local t = tick()
+	local color = Color3.fromRGB(
+		math.abs(math.sin(t)) * 255,
+		math.abs(math.sin(t + 2)) * 255,
+		math.abs(math.sin(t + 4)) * 255
+	)
+	for _, part in ipairs(parts) do
+		part.Color = color
+	end
+end)
+
+-- Applies material + stores for coloring
+local function handlePart(part)
+	if part:IsA("BasePart") then
+		part.Material = Enum.Material.ForceField
+		pcall(function() part.TextureID = "" end)
+		table.insert(parts, part)
+	end
+end
+
+-- Handles full FPSArms folder
+local function processFPSArms(folder)
+	for _, descendant in ipairs(folder:GetDescendants()) do
+		handlePart(descendant)
+	end
+	folder.DescendantAdded:Connect(handlePart)
+end
+
+-- Already exists? Process now
+local existing = FPSContainer:FindFirstChild("FPSArms")
+if existing then
+	processFPSArms(existing)
+end
+
+-- Watch for when it's added later
+FPSContainer.ChildAdded:Connect(function(child)
+	if child.Name == "FPSArms" then
+		processFPSArms(child)
+	end
+end)
