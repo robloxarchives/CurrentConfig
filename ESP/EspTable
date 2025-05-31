@@ -7,23 +7,15 @@ local g = {}
 local h = true
 local drawingsEnabled = true
 local n = {
-	{partName = "Body", partSize = Vector3.new(2.5, 6.25, 2.5), espLabel = "TC", espColor = Color3.new(0, 1, 0)},
-
-	{partName = "lights3", partSize = Vector3.new(0.42277026176452637, 0.6625227928161621, 0.07328414916992188), espLabel = "CAR", espColor = Color3.new(1.000000, 0.000000, 0.000000)},
- 
-	{partName = "Crates", partSize = Vector3.new(5.803810119628906, 2.7799904346466064, 5.775084972381592), espLabel = "Airdrop", espColor = Color3.new(1.000000, 0.098039, 0.000000)},
- 
-	{partName = "Prim", partSize = Vector3.new(3, 0.25, 3), espLabel = "x", espColor = Color3.new(0.000000, 0.478431, 0.866667)},
- 
-	{partName = "Bottom", partSize = Vector3.new(2.9763996601104736, 2.150311231613159, 6.314671516418457), espLabel = "MilitaryCrate", espColor = Color3.new(0.043137, 0.611765, 0.090196)},
- 
-	{partName="Hitbox", partSize=Vector3.new(4.5,6.75,2.25), espLabel="l", espColor=Color3.new(1,0,0)},
- 
-	{partName="Plastics2", partSize=Vector3.new(5.546261787414551, 1.9555978775024414, 3.854473352432251), espLabel="ATV", espColor=Color3.new(1.000000, 0.000000, 0.000000)},
-
-	{partName = "Prim", partSize = Vector3.new(1.8424512147903442, 3.0965967178344727, 0.9474747776985168), espLabel = "Gas", espColor = Color3.new(1.000000, 0.098039, 0.000000)},
-
-    	{partName="Frame", partSize=Vector3.new(6.3781023025512695, 10.241004943847656, 34.129459381103516), espLabel="Chopper", espColor=Color3.new(1,0,0)}
+  {partName = "Body", partSize = Vector3.new(2.5, 6.25, 2.5), espLabel = "TC", espColor = Color3.new(0, 1, 0)},
+  {partName = "lights3", partSize = Vector3.new(0.42277026176452637, 0.6625227928161621, 0.07328414916992188), espLabel = "CAR", espColor = Color3.new(1.000000, 0.000000, 0.000000)},
+  {partName = "Crates", partSize = Vector3.new(5.803810119628906, 2.7799904346466064, 5.775084972381592), espLabel = "Airdrop", espColor = Color3.new(1.000000, 0.098039, 0.000000)},
+  {partName = "Prim", partSize = Vector3.new(3, 0.25, 3), espLabel = "x", espColor = Color3.new(0.000000, 0.478431, 0.866667)},
+  {partName = "Bottom", partSize = Vector3.new(2.9763996601104736, 2.150311231613159, 6.314671516418457), espLabel = "MilitaryCrate", espColor = Color3.new(0.043137, 0.611765, 0.090196)},
+  {partName="Hitbox", partSize=Vector3.new(4.5,6.75,2.25), espLabel="l", espColor=Color3.new(1,0,0)},
+  {partName="Plastics2", partSize=Vector3.new(5.546261787414551, 1.9555978775024414, 3.854473352432251), espLabel="ATV", espColor=Color3.new(1.000000, 0.000000, 0.000000)},
+  {partName = "Prim", partSize = Vector3.new(1.8424512147903442, 3.0965967178344727, 0.9474747776985168), espLabel = "Gas", espColor = Color3.new(1.000000, 0.098039, 0.000000)},
+  {partName="Frame", partSize=Vector3.new(6.3781023025512695, 10.241004943847656, 34.129459381103516), espLabel="Chopper", espColor=Color3.new(1,0,0)}
 }
 
 local function o(p, q, r)
