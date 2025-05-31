@@ -1,0 +1,113 @@
+local a = game:GetService("Players")
+local b = game:GetService("RunService")
+local c = workspace.CurrentCamera
+local d = a.LocalPlayer
+local e = game:GetService("UserInputService")
+local g = {}
+local h = true
+local drawingsEnabled = true
+local n = {
+	{partName = "Body", partSize = Vector3.new(2.5, 6.25, 2.5), espLabel = "TC", espColor = Color3.new(0, 1, 0)},
+
+	{partName = "lights3", partSize = Vector3.new(0.42277026176452637, 0.6625227928161621, 0.07328414916992188), espLabel = "CAR", espColor = Color3.new(1.000000, 0.000000, 0.000000)},
+ 
+	{partName = "Crates", partSize = Vector3.new(5.803810119628906, 2.7799904346466064, 5.775084972381592), espLabel = "Airdrop", espColor = Color3.new(1.000000, 0.098039, 0.000000)},
+ 
+	{partName = "Prim", partSize = Vector3.new(3, 0.25, 3), espLabel = "x", espColor = Color3.new(0.000000, 0.478431, 0.866667)},
+ 
+	{partName = "Bottom", partSize = Vector3.new(2.9763996601104736, 2.150311231613159, 6.314671516418457), espLabel = "MilitaryCrate", espColor = Color3.new(0.043137, 0.611765, 0.090196)},
+ 
+	{partName="Hitbox", partSize=Vector3.new(4.5,6.75,2.25), espLabel="l", espColor=Color3.new(1,0,0)},
+ 
+	{partName="Plastics2", partSize=Vector3.new(5.546261787414551, 1.9555978775024414, 3.854473352432251), espLabel="ATV", espColor=Color3.new(1.000000, 0.000000, 0.000000)},
+
+	{partName = "Prim", partSize = Vector3.new(1.8424512147903442, 3.0965967178344727, 0.9474747776985168), espLabel = "Gas", espColor = Color3.new(1.000000, 0.098039, 0.000000)},
+
+  {partName="Frame", partSize=Vector3.new(6.3781023025512695, 10.241004943847656, 34.129459381103516), espLabel="Chopper", espColor=Color3.new(1,0,0)},
+
+
+}
+
+local function o(p, q, r)
+    r = r or 0.01
+    return math.abs(p.X - q.X) <= r and math.abs(p.Y - q.Y) <= r and math.abs(p.Z - q.Z) <= r
+end
+
+local function s(t, u, v)
+    if not g[t] then
+        local w = Drawing.new("Text")
+        w.Size = 26
+        w.Center = true
+        w.Outline = true
+        w.OutlineColor = Color3.new(0, 0, 0)
+        w.Color = v
+        w.Visible = true
+        g[t] = w
+    end
+    g[t].Text = u
+end
+
+local function x(t)
+    if g[t] then
+        g[t]:Remove()
+        g[t] = nil
+    end
+end
+
+local function y()
+    if not h or not drawingsEnabled then -- Check if drawings are disabled
+        for _, w in pairs(g) do
+            w.Visible = false
+        end
+        return
+    end
+
+    for t, w in pairs(g) do
+        if t and t:IsDescendantOf(workspace) then
+            local A, B = c:WorldToViewportPoint(t.Position)
+            if B then
+                w.Position = Vector2.new(A.X, A.Y)
+                w.Visible = true
+            else
+                w.Visible = false
+            end
+        else
+            x(t)
+        end
+    end
+end
+
+workspace.DescendantAdded:Connect(function(C)
+    for _, D in ipairs(n) do
+        if C:IsA("BasePart") and C.Name == D.partName and o(C.Size, D.partSize) then
+            s(C, D.espLabel, D.espColor)
+        end
+    end
+end)
+
+workspace.DescendantRemoving:Connect(function(C)
+    x(C)
+end)
+
+for _, C in ipairs(workspace:GetDescendants()) do
+    for _, D in ipairs(n) do
+        if C:IsA("BasePart") and C.Name == D.partName and o(C.Size, D.partSize) then
+            s(C, D.espLabel, D.espColor)
+        end
+    end
+end
+
+e.InputBegan:Connect(function(T, U)
+    if not U then
+        if T.KeyCode == Enum.KeyCode.O then -- Toggle key for drawings
+            drawingsEnabled = not drawingsEnabled
+            if not drawingsEnabled then
+                for _, w in pairs(g) do
+                    w.Visible = false
+                end
+            end
+        end
+    end
+end)
+
+b.RenderStepped:Connect(y)
