@@ -1,0 +1,179 @@
+local CarModeConfig = {
+    { Name = "CarMode1", Key = Enum.KeyCode.Z, Speed = 400 },
+    { Name = "CarMode2", Key = Enum.KeyCode.F, Speed = 15 }
+}
+
+-- 🚀 Services
+local userInput = game:GetService("UserInputService")
+local runService = game:GetService("RunService")
+local currentCamera = workspace.CurrentCamera
+local players = game:GetService("Players")
+local localPlayer = players.LocalPlayer
+
+-- 🔄 Runtime tracking
+local CarModes = {}
+for _, entry in ipairs(CarModeConfig) do
+    CarModes[entry.Name] = {
+        Key = entry.Key,
+        Speed = entry.Speed,
+        Active = false
+    }
+end
+
+local connections = {}
+local flyObjects = {}
+local rotateSpeed = math.rad(1)
+
+-- 🎯 ATV Detection Criteria
+local criteriaList = {
+-- // ATV
+    {partName="BackLeftW", partSize=Vector3.new(2.2, 2.2, 1)},
+    {partName="BackRightW", partSize=Vector3.new(2.2, 2.2, 1)},
+    {partName="Frame", partSize=Vector3.new(6.972, 2.774, 5.044)},
+    {partName="FrontLeftW", partSize=Vector3.new(2.2, 2.2, 0.75)},
+    {partName="FrontRightW", partSize=Vector3.new(2.2, 2.2, 0.75)},
+    {partName="Grip", partSize=Vector3.new(0.573, 0.96, 2.171)},
+    {partName="HandleBars", partSize=Vector3.new(0.448, 1.376, 2.068)},
+    {partName="Plastics", partSize=Vector3.new(7.551, 2.746, 4.972)},
+    {partName="Plastics2", partSize=Vector3.new(5.546, 1.955, 3.854)},
+    {partName="Seat", partSize=Vector3.new(4.404, 1.439, 2.225)},
+    {partName="LeftBackWH", partSize=Vector3.new(0.625, 0.625, 0.125)},
+    {partName="LeftFrontWH", partSize=Vector3.new(0.625, 0.625, 0.125)},
+    {partName="RightBackWH", partSize=Vector3.new(0.625, 0.625, 0.125)},
+    {partName="RightFrontWH", partSize=Vector3.new(0.625, 0.625, 0.125)},
+
+-- // CAR
+    {partName = "BLWheelHub", partSize = Vector3.new(0.25, 0.25, 0.25)},
+    {partName = "lights1", partSize = Vector3.new(3.0251893997192383, 0.6689038276672363, 5.577791213989258)},
+    {partName = "lights3", partSize = Vector3.new(0.42277026176452637, 0.6625227928161621, 0.07328414916992188)},
+    {partName = "lights2", partSize = Vector3.new(0.42277026176452637, 0.6625227928161621, 0.07328414916992188)},
+    {partName = "FRWheel", partSize = Vector3.new(2.4000000953674316, 2.4000000953674316, 0.7129999995231628)},
+    {partName = "FLWheel", partSize = Vector3.new(2.4000000953674316, 2.4000000953674316, 0.7129999995231628)},
+    {partName = "Body", partSize = Vector3.new(6.795680046081543, 5.078634262084961, 13.125102996826172)},
+    {partName = "BRWheel", partSize = Vector3.new(2.4000000953674316, 2.4000000953674316, 0.7129999995231628)},
+    {partName = "BLWheel", partSize = Vector3.new(2.4000000953674316, 2.4000000953674316, 0.7129999995231628)},
+
+-- // Helicopter
+	{partName = "BodyDummy", partSize = Vector3.new(6.1620001792907715, 8.545000076293945, 33.10900115966797)},
+	{partName = "DarkMetal", partSize = Vector3.new(4.703999996185303, 3.5480000972747803, 12.255000114440918)},
+	{partName = "DarkPlastic", partSize = Vector3.new(3.8454577922821045, 2.696401596069336, 12.28041934967041)},
+	{partName = "Frame", partSize = Vector3.new(6.3781023025512695, 10.241004943847656, 34.129459381103516)},
+	{partName = "Glass", partSize = Vector3.new(5.30127477645874, 4.208876609802246, 7.191850185394287)},
+	{partName = "Prop", partSize = Vector3.new(1.02241849899292, 0.2067021131515503, 33.35984802246094)},
+	{partName = "RearProp", partSize = Vector3.new(0.13741333782672882, 0.45417526364326477, 5.222059726715088)},
+	{partName = "Screens", partSize = Vector3.new(3.704662322998047, 1.3405617475509644, 0.6284188628196716)},
+	{partName = "Seats", partSize = Vector3.new(4.965398788452148, 2.59676456451416, 5.455690860748291)},
+	{partName = "Body", partSize = Vector3.new(6, 7.499999523162842, 8.300000190734863)},
+	{partName = "HeadLockPart", partSize = Vector3.new(4, 1, 2)}
+
+}
+
+-- 🧠 Utility
+local function isMatchingSize(partSize, targetSize, tolerance)
+    tolerance = tolerance or 0.001
+    return math.abs(partSize.X - targetSize.X) <= tolerance and
+           math.abs(partSize.Y - targetSize.Y) <= tolerance and
+           math.abs(partSize.Z - targetSize.Z) <= tolerance
+end
+
+local function matchesCriteria(part)
+    for _, criteria in ipairs(criteriaList) do
+        if part:IsA("BasePart") and part.Name == criteria.partName and isMatchingSize(part.Size, criteria.partSize) then
+            return true
+        end
+    end
+    return false
+end
+
+-- 🛫 Fly control
+local function controlFly(targetPart, flySpeed)
+    local flyVector = Vector3.zero
+    local rotateCFrame = CFrame.new()
+
+    if not userInput:GetFocusedTextBox() then
+        if userInput:IsKeyDown(Enum.KeyCode.W) then
+            flyVector += currentCamera.CFrame.LookVector * flySpeed
+        end
+        if userInput:IsKeyDown(Enum.KeyCode.A) then
+            flyVector -= currentCamera.CFrame.RightVector * flySpeed
+        end
+        if userInput:IsKeyDown(Enum.KeyCode.S) then
+            flyVector -= currentCamera.CFrame.LookVector * flySpeed
+        end
+        if userInput:IsKeyDown(Enum.KeyCode.D) then
+            flyVector += currentCamera.CFrame.RightVector * flySpeed
+        end
+        if userInput:IsKeyDown(Enum.KeyCode.R) then
+            rotateCFrame *= CFrame.Angles(0, -rotateSpeed, 0)
+        end
+        if userInput:IsKeyDown(Enum.KeyCode.Q) then
+            rotateCFrame *= CFrame.Angles(0, rotateSpeed, 0)
+        end
+
+        targetPart.CFrame *= rotateCFrame
+    else
+        targetPart.Velocity = Vector3.zero
+        targetPart.RotVelocity = Vector3.zero
+    end
+
+    targetPart.Velocity = flyVector
+end
+
+-- 🔁 Toggle car mode
+local function toggleCarMode(modeName)
+    local mode = CarModes[modeName]
+    local togglingOff = mode.Active
+
+    -- Deactivate all
+    for _, m in pairs(CarModes) do
+        m.Active = false
+    end
+
+    for _, conn in ipairs(connections) do conn:Disconnect() end
+    connections = {}
+
+    -- If re-pressing same key, disable
+    if togglingOff then return end
+
+    -- Activate
+    mode.Active = true
+    for _, obj in ipairs(flyObjects) do
+        obj.Anchored = false
+        local conn = runService.Heartbeat:Connect(function()
+            controlFly(obj, mode.Speed)
+        end)
+        table.insert(connections, conn)
+    end
+end
+
+-- 🎹 Input Listener
+userInput.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    for name, data in pairs(CarModes) do
+        if input.KeyCode == data.Key then
+            toggleCarMode(name)
+        end
+    end
+end)
+
+-- 📡 Detect eligible parts
+workspace.DescendantAdded:Connect(function(descendant)
+    if matchesCriteria(descendant) then
+        table.insert(flyObjects, descendant)
+    end
+end)
+
+workspace.DescendantRemoving:Connect(function(descendant)
+    for i, obj in ipairs(flyObjects) do
+        if obj == descendant then
+            table.remove(flyObjects, i)
+            break
+        end
+    end
+end)
+
+for _, descendant in ipairs(workspace:GetDescendants()) do
+    if matchesCriteria(descendant) then
+        table.insert(flyObjects, descendant)
+    end
+end
