@@ -23,9 +23,7 @@ local n = {
 
 	{partName = "Prim", partSize = Vector3.new(1.8424512147903442, 3.0965967178344727, 0.9474747776985168), espLabel = "Gas", espColor = Color3.new(1.000000, 0.098039, 0.000000)},
 
-  {partName="Frame", partSize=Vector3.new(6.3781023025512695, 10.241004943847656, 34.129459381103516), espLabel="Chopper", espColor=Color3.new(1,0,0)},
-
-
+    	{partName="Frame", partSize=Vector3.new(6.3781023025512695, 10.241004943847656, 34.129459381103516), espLabel="Chopper", espColor=Color3.new(1,0,0)}
 }
 
 local function o(p, q, r)
