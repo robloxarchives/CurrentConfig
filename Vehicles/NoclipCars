@@ -79,7 +79,7 @@ end
 
 -- Keybind listener for "H" key
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if not gameProcessed and input.KeyCode == Enum.KeyCode.H then
+    if not gameProcessed and input.KeyCode == Enum.KeyCode.T then
         toggleVehicleCollision()
     end
 end)
