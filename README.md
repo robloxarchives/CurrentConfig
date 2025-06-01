@@ -14,16 +14,16 @@ shared.executedURLs = shared.executedURLs or {}
 shared.failedURLs = {}
 
 local scripts = {
-    'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/AmongusOBFUSCATED',
-    'https://raw.githubusercontent.com/robloxarchives/Trident/main/Forcesprint',
-    'https://raw.githubusercontent.com/robloxarchives/Trident/main/SwimStyleSPRINT',
-    'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/ESP/EspTable',
+    'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/AmongusOBFUSCATED', -- Amongus
+    'https://raw.githubusercontent.com/robloxarchives/Trident/main/Forcesprint', -- Forcesprint
+    'https://raw.githubusercontent.com/robloxarchives/Trident/main/SwimStyleSPRINT', -- Speedhack
+    'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/ESP/EspTable', -- ESP
     'https://raw.githubusercontent.com/NotH4xor/trident/main/ChunkRemoval(HoldR)',
     'https://raw.githubusercontent.com/1337h4xx/1/main/X_3rd_Person',
     'https://raw.githubusercontent.com/NotH4xor/trident/main/UD_FREECAM',
     'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/Delete',
     'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/NoAtvRestriction',
-    'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/ATVNoclip_KeybindT',
+    'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/ATVNoclip_KeybindT', -- Noclip ATV
     'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/LongNeck(L)',
     'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/DepoLootAll(B)',
     'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/LootAll(V)',
@@ -31,8 +31,7 @@ local scripts = {
     'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/DespawnLoot(U)',
     'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/BackpackCleanup(RightBracket)',
     'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/ATV(Anti-Fall)',
-    'https://raw.githubusercontent.com/1337h4xx/1/main/RGB%20Notification',
-    'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/ESP/EspTable'
+    'https://raw.githubusercontent.com/1337h4xx/1/main/RGB%20Notification'
 }
 
 -- Optional: encode () to avoid rawgit parsing issues
@@ -75,6 +74,7 @@ task.delay(3, function()
         print("✅ All scripts executed successfully.")
     end
 end)
+
 ```
 
 # Lobby
