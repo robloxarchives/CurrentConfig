@@ -1,0 +1,152 @@
+-- Services
+local Players = game:GetService("Players")
+local UserInputService = cloneref(game:GetService("UserInputService"))
+local Workspace = cloneref(game:GetService("Workspace"))
+local RunService = cloneref(game:GetService("RunService"))
+local Camera = Workspace.CurrentCamera
+local LocalPlayer = Players.LocalPlayer
+
+-- Placeholder for LPH_JIT_MAX if not defined
+if not LPH_JIT_MAX then
+    LPH_JIT_MAX = function(...) return ... end
+end
+
+-- Utility table for managing connections
+local cheat = {
+    connections = { renderstepped = {} }
+}
+
+-- Hook global render loop like SwimHub does
+RunService.RenderStepped:Connect(function(delta)
+    for _, func in pairs(cheat.connections.renderstepped) do
+        func(delta)
+    end
+end)
+
+-- Utility function to create new renderstepped connections
+cheat.utility = {}
+cheat.utility.new_renderstepped = function(func)
+    local obj = {}
+    cheat.connections.renderstepped[func] = func
+    function obj:Disconnect()
+        if func then
+            cheat.connections.renderstepped[func] = nil
+            func = nil
+        end
+    end
+    return obj
+end
+
+-- Vehicle Fly feature
+do
+    local carfly_enabled = false
+    local speed, accel, upspeed = 338, 200, 15
+
+    -- Toggle with Y key
+    UserInputService.InputBegan:Connect(function(input, gameProcessed)
+        if not gameProcessed and input.KeyCode == Enum.KeyCode.Y then
+            carfly_enabled = not carfly_enabled
+            warn("Vehicle Fly " .. (carfly_enabled and "enabled" or "disabled"))
+        end
+    end)
+
+    -- Robust middlepart detection
+    local middlepart
+    task.spawn(function()
+        repeat
+            pcall(function()
+                middlepart = Workspace:WaitForChild("Const", 3):WaitForChild("Ignore", 3):WaitForChild("LocalCharacter", 3):WaitForChild("Middle", 3)
+            end)
+            task.wait(1)
+        until middlepart
+    end)
+
+    -- Vehicle detection using VehicleIdentifiers
+    local car, dist = nil, 50
+    local VehicleIdentifiers = {
+        {"Seat", "Plastics"},
+        {"lights2", "lights3"},
+    }
+
+    local function findcar()
+        car, dist = nil, 50
+        local ref_pos = (middlepart and middlepart.Position) or Camera.CFrame.Position
+
+        for _, model in pairs(Workspace:GetChildren()) do
+            if model:IsA("Model") then
+                for _, identifiers in ipairs(VehicleIdentifiers) do
+                    local allFound = true
+                    for _, partName in ipairs(identifiers) do
+                        if not model:FindFirstChild(partName) then
+                            allFound = false
+                            break
+                        end
+                    end
+                    if allFound then
+                        local refPart = model:FindFirstChild(identifiers[1])
+                        if refPart and refPart:IsA("BasePart") then
+                            local distance = (refPart.Position - ref_pos).Magnitude
+                            if distance < dist then
+                                car = model
+                                dist = distance
+                            end
+                        end
+                        break -- Stop checking other identifier sets
+                    end
+                end
+            end
+        end
+    end
+
+    -- Movement logic
+    local buildup = 0
+    local lastdir = Vector3.new(1, 0, 0)
+
+    cheat.utility.new_renderstepped(LPH_JIT_MAX(function(delta)
+        if carfly_enabled then
+            if not middlepart then return end
+            local ref_pos = middlepart.Position
+            if not car or (car:GetPrimaryPartCFrame().Position - ref_pos).Magnitude > 50 then
+                findcar()
+                buildup = 0
+                return
+            end
+
+            local cameralook = Camera.CFrame.LookVector
+            cameralook = Vector3.new(cameralook.X, 0, cameralook.Z)
+
+            local direction = Vector3.zero
+            direction = UserInputService:IsKeyDown(Enum.KeyCode.W) and direction + cameralook or direction
+            direction = UserInputService:IsKeyDown(Enum.KeyCode.S) and direction - cameralook or direction
+            direction = UserInputService:IsKeyDown(Enum.KeyCode.D) and direction + Vector3.new(-cameralook.Z, 0, cameralook.X) or direction
+            direction = UserInputService:IsKeyDown(Enum.KeyCode.A) and direction + Vector3.new(cameralook.Z, 0, -cameralook.X) or direction
+            direction = UserInputService:IsKeyDown(Enum.KeyCode.V) and direction + Vector3.yAxis or direction
+            direction = UserInputService:IsKeyDown(Enum.KeyCode.B) and direction - Vector3.yAxis or direction
+
+            if direction ~= Vector3.zero then
+                direction = direction.Unit
+                if direction ~= Vector3.yAxis and direction ~= -Vector3.yAxis then
+                    buildup = math.clamp(buildup + delta * accel, 0, speed)
+                    lastdir = direction
+                end
+            else
+                direction = lastdir
+                buildup = math.clamp(buildup - delta * 150, 0, speed)
+            end
+
+            for _, v in pairs(car:GetChildren()) do
+                if v:IsA("BasePart") then
+                    v.Anchored = false
+                    v.AssemblyLinearVelocity = Vector3.new(direction.X * buildup, direction.Y * upspeed, direction.Z * buildup)
+                end
+            end
+        end
+    end))
+
+    -- Reset state on character respawn
+    LocalPlayer.CharacterAdded:Connect(function()
+        carfly_enabled = false
+        car = nil
+        buildup = 0
+    end)
+end
