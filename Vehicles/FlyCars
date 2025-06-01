@@ -1,6 +1,6 @@
 local CarModeConfig = {
     { Name = "CarMode1", Key = Enum.KeyCode.Z, Speed = 60 },
-    { Name = "CarMode2", Key = Enum.KeyCode.F, Speed = 15 }
+    { Name = "CarMode2", Key = Enum.KeyCode.F, Speed = 19 }
 }
 
 -- 🚀 Services
@@ -22,11 +22,10 @@ end
 
 local connections = {}
 local flyObjects = {}
-local rotateSpeed = math.rad(1)
+local rotateSpeed = math.rad(0.1) -- ✅ Smoother, slower rotation speed
 
--- 🎯 ATV Detection Criteria
+-- 🎯 Detection Criteria
 local criteriaList = {
--- // ATV
     {partName="BackLeftW", partSize=Vector3.new(2.2, 2.2, 1)},
     {partName="BackRightW", partSize=Vector3.new(2.2, 2.2, 1)},
     {partName="Frame", partSize=Vector3.new(6.972, 2.774, 5.044)},
@@ -41,34 +40,27 @@ local criteriaList = {
     {partName="LeftFrontWH", partSize=Vector3.new(0.625, 0.625, 0.125)},
     {partName="RightBackWH", partSize=Vector3.new(0.625, 0.625, 0.125)},
     {partName="RightFrontWH", partSize=Vector3.new(0.625, 0.625, 0.125)},
-
--- // CAR
-    {partName = "BLWheelHub", partSize = Vector3.new(0.25, 0.25, 0.25)},
-    {partName = "lights1", partSize = Vector3.new(3.0251893997192383, 0.6689038276672363, 5.577791213989258)},
-    {partName = "lights3", partSize = Vector3.new(0.42277026176452637, 0.6625227928161621, 0.07328414916992188)},
-    {partName = "lights2", partSize = Vector3.new(0.42277026176452637, 0.6625227928161621, 0.07328414916992188)},
-    {partName = "FRWheel", partSize = Vector3.new(2.4000000953674316, 2.4000000953674316, 0.7129999995231628)},
-    {partName = "FLWheel", partSize = Vector3.new(2.4000000953674316, 2.4000000953674316, 0.7129999995231628)},
-    {partName = "Body", partSize = Vector3.new(6.795680046081543, 5.078634262084961, 13.125102996826172)},
-    {partName = "BRWheel", partSize = Vector3.new(2.4000000953674316, 2.4000000953674316, 0.7129999995231628)},
-    {partName = "BLWheel", partSize = Vector3.new(2.4000000953674316, 2.4000000953674316, 0.7129999995231628)},
-
--- // Helicopter
-	{partName = "BodyDummy", partSize = Vector3.new(6.1620001792907715, 8.545000076293945, 33.10900115966797)},
-	{partName = "DarkMetal", partSize = Vector3.new(4.703999996185303, 3.5480000972747803, 12.255000114440918)},
-	{partName = "DarkPlastic", partSize = Vector3.new(3.8454577922821045, 2.696401596069336, 12.28041934967041)},
-	{partName = "Frame", partSize = Vector3.new(6.3781023025512695, 10.241004943847656, 34.129459381103516)},
-	{partName = "Glass", partSize = Vector3.new(5.30127477645874, 4.208876609802246, 7.191850185394287)},
-	{partName = "Prop", partSize = Vector3.new(1.02241849899292, 0.2067021131515503, 33.35984802246094)},
-	{partName = "RearProp", partSize = Vector3.new(0.13741333782672882, 0.45417526364326477, 5.222059726715088)},
-	{partName = "Screens", partSize = Vector3.new(3.704662322998047, 1.3405617475509644, 0.6284188628196716)},
-	{partName = "Seats", partSize = Vector3.new(4.965398788452148, 2.59676456451416, 5.455690860748291)},
-	{partName = "Body", partSize = Vector3.new(6, 7.499999523162842, 8.300000190734863)},
-	{partName = "HeadLockPart", partSize = Vector3.new(4, 1, 2)}
-
+    {partName="BLWheelHub", partSize=Vector3.new(0.25, 0.25, 0.25)},
+    {partName="lights1", partSize=Vector3.new(3.025, 0.668, 5.577)},
+    {partName="lights3", partSize=Vector3.new(0.422, 0.662, 0.073)},
+    {partName="lights2", partSize=Vector3.new(0.422, 0.662, 0.073)},
+    {partName="FRWheel", partSize=Vector3.new(2.4, 2.4, 0.713)},
+    {partName="FLWheel", partSize=Vector3.new(2.4, 2.4, 0.713)},
+    {partName="Body", partSize=Vector3.new(6.796, 5.079, 13.125)},
+    {partName="BRWheel", partSize=Vector3.new(2.4, 2.4, 0.713)},
+    {partName="BLWheel", partSize=Vector3.new(2.4, 2.4, 0.713)},
+    {partName="BodyDummy", partSize=Vector3.new(6.162, 8.545, 33.109)},
+    {partName="DarkMetal", partSize=Vector3.new(4.704, 3.548, 12.255)},
+    {partName="DarkPlastic", partSize=Vector3.new(3.845, 2.696, 12.280)},
+    {partName="Glass", partSize=Vector3.new(5.301, 4.208, 7.192)},
+    {partName="Prop", partSize=Vector3.new(1.022, 0.207, 33.360)},
+    {partName="RearProp", partSize=Vector3.new(0.137, 0.454, 5.222)},
+    {partName="Screens", partSize=Vector3.new(3.705, 1.341, 0.628)},
+    {partName="Seats", partSize=Vector3.new(4.965, 2.597, 5.456)},
+    {partName="HeadLockPart", partSize=Vector3.new(4, 1, 2)}
 }
 
--- 🧠 Utility
+-- 🧠 Matching functions
 local function isMatchingSize(partSize, targetSize, tolerance)
     tolerance = tolerance or 0.001
     return math.abs(partSize.X - targetSize.X) <= tolerance and
@@ -85,12 +77,13 @@ local function matchesCriteria(part)
     return false
 end
 
--- 🛫 Fly control
+-- 🛫 Fly + Tilt + Yaw
 local function controlFly(targetPart, flySpeed)
     local flyVector = Vector3.zero
     local rotateCFrame = CFrame.new()
 
     if not userInput:GetFocusedTextBox() then
+        -- Movement
         if userInput:IsKeyDown(Enum.KeyCode.W) then
             flyVector += currentCamera.CFrame.LookVector * flySpeed
         end
@@ -103,11 +96,21 @@ local function controlFly(targetPart, flySpeed)
         if userInput:IsKeyDown(Enum.KeyCode.D) then
             flyVector += currentCamera.CFrame.RightVector * flySpeed
         end
-        if userInput:IsKeyDown(Enum.KeyCode.R) then
-            rotateCFrame *= CFrame.Angles(0, -rotateSpeed, 0)
+
+        -- Tilt (Pitch)
+        if userInput:IsKeyDown(Enum.KeyCode.T) then
+            rotateCFrame *= CFrame.Angles(-rotateSpeed, 0, 0)
         end
+        if userInput:IsKeyDown(Enum.KeyCode.G) then
+            rotateCFrame *= CFrame.Angles(rotateSpeed, 0, 0)
+        end
+
+        -- Yaw
         if userInput:IsKeyDown(Enum.KeyCode.Q) then
             rotateCFrame *= CFrame.Angles(0, rotateSpeed, 0)
+        end
+        if userInput:IsKeyDown(Enum.KeyCode.R) then
+            rotateCFrame *= CFrame.Angles(0, -rotateSpeed, 0)
         end
 
         targetPart.CFrame *= rotateCFrame
@@ -119,23 +122,21 @@ local function controlFly(targetPart, flySpeed)
     targetPart.Velocity = flyVector
 end
 
--- 🔁 Toggle car mode
+-- 🔁 Toggle Mode
 local function toggleCarMode(modeName)
     local mode = CarModes[modeName]
     local togglingOff = mode.Active
 
-    -- Deactivate all
     for _, m in pairs(CarModes) do
         m.Active = false
     end
-
-    for _, conn in ipairs(connections) do conn:Disconnect() end
+    for _, conn in ipairs(connections) do
+        conn:Disconnect()
+    end
     connections = {}
 
-    -- If re-pressing same key, disable
     if togglingOff then return end
 
-    -- Activate
     mode.Active = true
     for _, obj in ipairs(flyObjects) do
         obj.Anchored = false
@@ -146,7 +147,7 @@ local function toggleCarMode(modeName)
     end
 end
 
--- 🎹 Input Listener
+-- 🎹 Key Input
 userInput.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end
     for name, data in pairs(CarModes) do
@@ -156,7 +157,7 @@ userInput.InputBegan:Connect(function(input, gameProcessed)
     end
 end)
 
--- 📡 Detect eligible parts
+-- 📡 Find Parts
 workspace.DescendantAdded:Connect(function(descendant)
     if matchesCriteria(descendant) then
         table.insert(flyObjects, descendant)
