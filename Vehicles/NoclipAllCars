@@ -1,0 +1,72 @@
+-- Services
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local Workspace = game:GetService("Workspace")
+local LocalPlayer = Players.LocalPlayer
+
+-- ATV toggle setup
+local collisionToggle = false
+local ClosestATV = nil
+
+-- List of valid model identifiers (each subtable represents one type of model)
+local ATVIdentifiers = {
+    {"Seat", "Plastics"},
+    {"lights2", "lights3"},
+}
+
+-- Find the closest model that matches any identifier set
+local function GetClosestATV()
+    local character = Workspace:FindFirstChild("Const") and Workspace.Const:FindFirstChild("Ignore") and Workspace.Const.Ignore:FindFirstChild("LocalCharacter")
+    if not character or not character:FindFirstChild("Middle") then return nil end
+
+    local middlePos = character.Middle.Position
+    local closestATV, closestDistance = nil, math.huge
+
+    for _, model in ipairs(Workspace:GetChildren()) do
+        if model:IsA("Model") then
+            for _, identifiers in ipairs(ATVIdentifiers) do
+                local allFound = true
+                for _, partName in ipairs(identifiers) do
+                    if not model:FindFirstChild(partName) then
+                        allFound = false
+                        break
+                    end
+                end
+                if allFound then
+                    local refPart = model:FindFirstChild(identifiers[1])
+                    if refPart and refPart:IsA("BasePart") then
+                        local distance = (refPart.Position - middlePos).Magnitude
+                        if distance < closestDistance then
+                            closestATV = model
+                            closestDistance = distance
+                        end
+                    end
+                    break -- already matched one identifier set, skip others
+                end
+            end
+        end
+    end
+
+    return closestATV
+end
+
+-- Toggle collision for the closest matching model
+local function toggleATVCollision()
+    ClosestATV = GetClosestATV()
+    if not ClosestATV then return end
+
+    collisionToggle = not collisionToggle
+    for _, part in ipairs(ClosestATV:GetDescendants()) do
+        if part:IsA("BasePart") then
+            part.CanCollide = collisionToggle
+        end
+    end
+    print("ATV Collision Toggled:", collisionToggle)
+end
+
+-- Keybind listener for "T" key
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if not gameProcessed and input.KeyCode == Enum.KeyCode.T then
+        toggleATVCollision()
+    end
+end)
