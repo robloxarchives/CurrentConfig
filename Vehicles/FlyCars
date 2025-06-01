@@ -1,7 +1,7 @@
 local CarModeConfig = {
     { Name = "CarMode1", Key = Enum.KeyCode.Z, Speed = 60 },
     { Name = "CarMode2", Key = Enum.KeyCode.F, Speed = 15 },
-    { Name = "CarMode2", Key = Enum.KeyCode.H, Speed = 300 }
+    { Name = "CarMode3", Key = Enum.KeyCode.H, Speed = 300 }
 }
 
 -- 🚀 Services
