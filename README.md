@@ -33,7 +33,7 @@ local scripts = {
     'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/ESP/EspTable', -- ESP
     'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/Vehicles/FlyCars', -- FlyCar
     'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/Vehicles/NoclipCars',
-    'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/Vehicles/BetterFly(Y)' -- Noclip
+    'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/Vehicles/BetterFly(Y)' -- BetterFly
 }
 
 -- Optional: encode () to avoid rawgit parsing issues
