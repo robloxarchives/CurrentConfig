@@ -22,7 +22,7 @@ end
 
 local connections = {}
 local flyObjects = {}
-local rotateSpeed = math.rad(0.1) -- ✅ Smoother, slower rotation speed
+local rotateSpeed = math.rad(1) -- ✅ Smoother, slower rotation speed
 
 -- 🎯 Detection Criteria
 local criteriaList = {
