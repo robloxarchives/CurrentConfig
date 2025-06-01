@@ -4,18 +4,25 @@ local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
 local LocalPlayer = Players.LocalPlayer
 
--- ATV toggle setup
+-- Collision toggle setup
 local collisionToggle = false
-local ClosestATV = nil
+local ClosestVehicle = nil
+local LastToggledVehicle = nil
 
--- List of valid model identifiers (each subtable represents one type of model)
+-- Vehicle identifier sets (each set represents a unique model type)
 local VehicleIdentifiers = {
     {"Seat", "Plastics"},
     {"lights2", "lights3"},
 }
 
--- Find the first model that matches any identifier set (no distance check)
-local function GetFirstMatchingVehicle()
+-- Find the closest vehicle model that matches any identifier set
+local function GetClosestVehicle()
+    local character = Workspace:FindFirstChild("Const") and Workspace.Const:FindFirstChild("Ignore") and Workspace.Const.Ignore:FindFirstChild("LocalCharacter")
+    if not character or not character:FindFirstChild("Middle") then return nil end
+
+    local middlePos = character.Middle.Position
+    local closestVehicle, closestDistance = nil, math.huge
+
     for _, model in ipairs(Workspace:GetChildren()) do
         if model:IsA("Model") then
             for _, identifiers in ipairs(VehicleIdentifiers) do
@@ -27,31 +34,59 @@ local function GetFirstMatchingVehicle()
                     end
                 end
                 if allFound then
-                    return model -- Found a valid vehicle, return it immediately
+                    local refPart = model:FindFirstChild(identifiers[1])
+                    if refPart and refPart:IsA("BasePart") then
+                        local distance = (refPart.Position - middlePos).Magnitude
+                        if distance < closestDistance then
+                            closestVehicle = model
+                            closestDistance = distance
+                        end
+                    end
+                    break -- Stop checking other identifier sets
                 end
             end
         end
     end
-    return nil
+
+    return closestVehicle
 end
 
--- Toggle collision for the first matching model
+-- Toggle collision on the closest vehicle model
 local function toggleVehicleCollision()
-    ClosestATV = GetFirstMatchingVehicle()
-    if not ClosestATV then return end
+    local newVehicle = GetClosestVehicle()
+    if not newVehicle then return end
+
+    -- If targeting a new vehicle, restore the previous one
+    if LastToggledVehicle and LastToggledVehicle ~= newVehicle then
+        for _, part in ipairs(LastToggledVehicle:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.CanCollide = true
+            end
+        end
+    end
 
     collisionToggle = not collisionToggle
-    for _, part in ipairs(ClosestATV:GetDescendants()) do
+
+    for _, part in ipairs(newVehicle:GetDescendants()) do
         if part:IsA("BasePart") then
             part.CanCollide = collisionToggle
         end
     end
+
+    LastToggledVehicle = newVehicle
     print("Vehicle Collision Toggled:", collisionToggle)
 end
 
 -- Keybind listener for "T" key
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if not gameProcessed and input.KeyCode == Enum.KeyCode.J then
+    if not gameProcessed and input.KeyCode == Enum.KeyCode.T then
         toggleVehicleCollision()
     end
+end)
+
+-- Optional: Reset state on character respawn
+LocalPlayer.CharacterAdded:Connect(function()
+    collisionToggle = false
+    ClosestVehicle = nil
+    LastToggledVehicle = nil
 end)
