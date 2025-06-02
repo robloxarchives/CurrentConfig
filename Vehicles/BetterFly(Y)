@@ -35,7 +35,7 @@ cheat.utility.new_renderstepped = function(func)
     return obj
 end
 
--- Fly System
+-- 🔄 Fly System
 do
     local carfly_enabled = false
     local speed, accel, upspeed = 338, 200, 15
@@ -57,22 +57,29 @@ do
         end
     end)
 
-    -- Watch for middlepart forever
-    task.spawn(function()
-        while true do
-            pcall(function()
-                local mp = Workspace:WaitForChild("Const", 3)
-                    :WaitForChild("Ignore", 3)
-                    :WaitForChild("LocalCharacter", 3)
-                    :WaitForChild("Middle", 3)
-                if mp and mp:IsDescendantOf(game) then
-                    middlepart = mp
-                else
-                    middlepart = nil
-                end
-            end)
-            task.wait(1)
-        end
+    -- Function to rebind middlepart
+    local function updateMiddlePart()
+        task.spawn(function()
+            repeat
+                pcall(function()
+                    middlepart = Workspace:WaitForChild("Const", 3)
+                        :WaitForChild("Ignore", 3)
+                        :WaitForChild("LocalCharacter", 3)
+                        :WaitForChild("Middle", 3)
+                end)
+                task.wait(1)
+            until middlepart
+        end)
+    end
+
+    updateMiddlePart() -- Initial binding
+
+    -- Reset on character added
+    LocalPlayer.CharacterAdded:Connect(function()
+        carfly_enabled = false
+        car = nil
+        buildup = 0
+        updateMiddlePart()
     end)
 
     -- Vehicle finder
@@ -109,11 +116,6 @@ do
     -- Render loop logic
     cheat.utility.new_renderstepped(LPH_JIT_MAX(function(delta)
         if carfly_enabled and middlepart then
-            if not middlepart:IsDescendantOf(game) then
-                middlepart = nil
-                return
-            end
-
             local ref_pos = middlepart.Position
             if not car or (car:GetPrimaryPartCFrame().Position - ref_pos).Magnitude > 50 then
                 findcar()
