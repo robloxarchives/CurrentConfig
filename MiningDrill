@@ -1,0 +1,41 @@
+-- ✅ Services
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+
+local player = Players.LocalPlayer
+local remote = player:WaitForChild("TCP")
+
+-- ✅ State
+local lastDrillArgs = nil
+local autoMine = false
+local drillDelay = 0.01 -- Lower is faster
+
+-- ✅ Register drill detection hook
+table.insert(shared._namecall_hooks, function(self, method, args)
+    if self == remote and method == "FireServer" and args[1] == 10 and args[2] == "Hit" then
+        lastDrillArgs = args
+    end
+end)
+
+-- ✅ Auto-mine loop
+task.spawn(function()
+    while true do
+        if autoMine and lastDrillArgs then
+            remote:FireServer(unpack(lastDrillArgs))
+        end
+        task.wait(drillDelay)
+    end
+end)
+
+-- ✅ Toggle mining with J
+UserInputService.InputBegan:Connect(function(input, gp)
+    if gp then return end
+    if input.KeyCode == Enum.KeyCode.J then
+        autoMine = not autoMine
+        if not autoMine then
+            remote:FireServer(10, "Using", false)
+        end
+        print("[⛏️] AutoMine:", autoMine and "ENABLED" or "DISABLED")
+    end
+end)
