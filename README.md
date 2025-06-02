@@ -61,7 +61,8 @@ local scripts = {
     'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/ESP/EspTable',
     'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/Vehicles/FlyCars',
     'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/Vehicles/NoclipCars',
-    'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/Vehicles/BetterFly(Y)'
+    'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/Vehicles/BetterFly(Y)',
+    'https://raw.githubusercontent.com/robloxarchives/CurrentConfig/main/MiningDrill'
 }
 
 -- Optional: encode () to avoid rawgit parsing issues
