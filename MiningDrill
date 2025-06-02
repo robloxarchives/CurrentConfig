@@ -2,40 +2,60 @@
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
+local workspace = game:GetService("Workspace")
 
+local Camera = workspace.CurrentCamera
 local player = Players.LocalPlayer
 local remote = player:WaitForChild("TCP")
 
--- ✅ State
+-- ✅ AutoMine State
 local lastDrillArgs = nil
 local autoMine = false
-local drillDelay = 0.01 -- Lower is faster
+local drillDelay = 0.01
+
+-- ✅ MiningDrill Text Indicator (appears below ForceSprint)
+local drillText = Drawing.new("Text")
+drillText.Color = Color3.new(1, 1, 0) -- Yellow
+drillText.Text = "MiningDrill"
+drillText.Size = 25
+drillText.Outline = true
+drillText.Center = false
+drillText.Visible = false
+
+-- Update visual position on screen
+RunService.RenderStepped:Connect(function()
+	local viewportSize = Camera.ViewportSize
+	drillText.Position = Vector2.new(viewportSize.X - 100, 100) -- Slightly below ForceSprint
+end)
 
 -- ✅ Register drill detection hook
 table.insert(shared._namecall_hooks, function(self, method, args)
-    if self == remote and method == "FireServer" and args[1] == 10 and args[2] == "Hit" then
-        lastDrillArgs = args
-    end
+	if self == remote and method == "FireServer" and args[1] == 10 and args[2] == "Hit" then
+		lastDrillArgs = args
+	end
 end)
 
 -- ✅ Auto-mine loop
 task.spawn(function()
-    while true do
-        if autoMine and lastDrillArgs then
-            remote:FireServer(unpack(lastDrillArgs))
-        end
-        task.wait(drillDelay)
-    end
+	while true do
+		if autoMine and lastDrillArgs then
+			remote:FireServer(unpack(lastDrillArgs))
+		end
+		task.wait(drillDelay)
+	end
 end)
 
--- ✅ Toggle mining with J
+-- ✅ Toggle AutoMine with J key
 UserInputService.InputBegan:Connect(function(input, gp)
-    if gp then return end
-    if input.KeyCode == Enum.KeyCode.J then
-        autoMine = not autoMine
-        if not autoMine then
-            remote:FireServer(10, "Using", false)
-        end
-        print("[⛏️] AutoMine:", autoMine and "ENABLED" or "DISABLED")
-    end
+	if gp then return end
+	if input.KeyCode == Enum.KeyCode.J then
+		autoMine = not autoMine
+		drillText.Visible = autoMine
+
+		if not autoMine then
+			remote:FireServer(10, "Using", false)
+		end
+
+		print("[⛏️] AutoMine:", autoMine and "ENABLED" or "DISABLED")
+	end
 end)
