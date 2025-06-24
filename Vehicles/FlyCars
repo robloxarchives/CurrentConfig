@@ -27,7 +27,6 @@ local rotateSpeed = math.rad(1)
 
 -- 🎯 ATV Detection Criteria
 local criteriaList = {
--- // ATV
     {partName="BackLeftW", partSize=Vector3.new(2.2, 2.2, 1)},
     {partName="BackRightW", partSize=Vector3.new(2.2, 2.2, 1)},
     {partName="Frame", partSize=Vector3.new(6.972, 2.774, 5.044)},
@@ -66,7 +65,6 @@ local criteriaList = {
 	{partName = "Seats", partSize = Vector3.new(4.965398788452148, 2.59676456451416, 5.455690860748291)},
 	{partName = "Body", partSize = Vector3.new(6, 7.499999523162842, 8.300000190734863)},
 	{partName = "HeadLockPart", partSize = Vector3.new(4, 1, 2)}
-
 }
 
 -- 🧠 Utility
@@ -161,6 +159,13 @@ end)
 workspace.DescendantAdded:Connect(function(descendant)
     if matchesCriteria(descendant) then
         table.insert(flyObjects, descendant)
+
+        if descendant:IsA("BasePart") then
+            local name = descendant.Name
+            if name == "BLWheel" or name == "BRWheel" or name == "FLWheel" or name == "FRWheel" or name == "BLWheelHub" then
+                descendant.CanCollide = false
+            end
+        end
     end
 end)
 
@@ -173,8 +178,30 @@ workspace.DescendantRemoving:Connect(function(descendant)
     end
 end)
 
+-- 🧩 Initial detection pass
 for _, descendant in ipairs(workspace:GetDescendants()) do
     if matchesCriteria(descendant) then
         table.insert(flyObjects, descendant)
+
+        if descendant:IsA("BasePart") then
+            local name = descendant.Name
+            if name == "BLWheel" or name == "BRWheel" or name == "FLWheel" or name == "FRWheel" or name == "BLWheelHub" then
+                descendant.CanCollide = false
+            end
+        end
     end
 end
+
+-- 🔒 Continuous enforcement of NoCollide
+runService.Heartbeat:Connect(function()
+    for _, obj in ipairs(flyObjects) do
+        if obj:IsA("BasePart") then
+            local name = obj.Name
+            if name == "BLWheel" or name == "BRWheel" or name == "FLWheel" or name == "FRWheel" or name == "BLWheelHub" then
+                if obj.CanCollide then
+                    obj.CanCollide = false
+                end
+            end
+        end
+    end
+end)
