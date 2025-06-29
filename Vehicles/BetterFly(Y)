@@ -38,10 +38,9 @@ end
 -- 🔄 Fly System
 do
     local carfly_enabled = false
-    local speed, accel, upspeed = 338, 200, 15
+    local speed, upspeed = 338, 15
     local car, dist = nil, 50
     local middlepart = nil
-    local buildup = 0
     local lastdir = Vector3.new(1, 0, 0)
 
     local VehicleIdentifiers = {
@@ -78,7 +77,6 @@ do
     LocalPlayer.CharacterAdded:Connect(function()
         carfly_enabled = false
         car = nil
-        buildup = 0
         updateMiddlePart()
     end)
 
@@ -119,7 +117,6 @@ do
             local ref_pos = middlepart.Position
             if not car or (car:GetPrimaryPartCFrame().Position - ref_pos).Magnitude > 50 then
                 findcar()
-                buildup = 0
                 return
             end
 
@@ -136,19 +133,16 @@ do
 
             if direction ~= Vector3.zero then
                 direction = direction.Unit
-                if direction ~= Vector3.yAxis and direction ~= -Vector3.yAxis then
-                    buildup = math.clamp(buildup + delta * accel, 0, speed)
-                    lastdir = direction
-                end
-            else
-                direction = lastdir
-                buildup = math.clamp(buildup - delta * 150, 0, speed)
+                lastdir = direction
             end
+
+            direction = direction ~= Vector3.zero and direction or lastdir
+            local velocity = Vector3.new(direction.X * speed, direction.Y * upspeed, direction.Z * speed)
 
             for _, v in pairs(car:GetChildren()) do
                 if v:IsA("BasePart") then
                     v.Anchored = false
-                    v.AssemblyLinearVelocity = Vector3.new(direction.X * buildup, direction.Y * upspeed, direction.Z * buildup)
+                    v.AssemblyLinearVelocity = velocity
                 end
             end
         end
