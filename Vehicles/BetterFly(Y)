@@ -1,5 +1,6 @@
 -- Changes:
--- Bumped Speed 334 to 347
+-- Bumped Speed to 347
+-- Original speed: 338
 
 -- Services
 local Players = game:GetService("Players")
