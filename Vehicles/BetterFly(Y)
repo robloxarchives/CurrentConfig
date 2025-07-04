@@ -42,7 +42,7 @@ end
 -- 🔄 Fly System
 do
     local carfly_enabled = false
-    local speed, upspeed = 338, 15
+    local speed, upspeed = 347, 15
     local car, dist = nil, 50
     local middlepart = nil
     local lastdir = Vector3.new(1, 0, 0)
